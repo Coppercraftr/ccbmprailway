@@ -2,16 +2,18 @@ const express = require("express");
 const fs = require("fs");
 const cors = require("cors");
 const http = require("http");
+const path = require("path");
 
 const app = express();
-const server = http.createServer(app); // use manual HTTP server
+const server = http.createServer(app); // manual HTTP server
 const PORT = process.env.PORT || 3000;
+
+// Use /tmp folder for Vercel (temporary writable storage)
+const filePath = path.join("/tmp", "players.txt");
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
-const filePath = "./players.txt";
 
 // ─── GET ALL PLAYERS ───
 app.get("/get_players", (req, res) => {
@@ -38,7 +40,6 @@ app.get("/join", (req, res) => {
 
   fs.writeFileSync(filePath, data);
 
-  // ✅ Pure text response, behaves like your working server
   res.setHeader("Content-Type", "text/plain");
   res.end(playerID);
 });
@@ -46,7 +47,9 @@ app.get("/join", (req, res) => {
 // ─── UPDATE PLAYER ───
 app.get("/update", (req, res) => {
   const { id, position, rotation } = req.query;
-  if (!id || !position || !rotation) return res.send("Error: Missing parameters.");
+  if (!id || !position || !rotation) {
+    return res.send("Error: Missing parameters.");
+  }
 
   let players = [];
 
@@ -74,7 +77,6 @@ app.get("/update", (req, res) => {
   res.end("OK");
 });
 
-// ✅ Start server using raw HTTP to avoid Express quirks
 server.listen(PORT, () => {
   console.log("Server is running on port " + PORT);
 });
