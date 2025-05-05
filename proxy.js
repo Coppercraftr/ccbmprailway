@@ -5,7 +5,7 @@ const app = express();
 
 app.get('/proxy', async (req, res) => {
   try {
-    const response = await fetch('https://your-real-server.com/Join');
+    const response = await fetch('http://ccbmpp.onrender.com/join');
     const text = await response.text();
     res.send(text); // Send back to CopperCube
   } catch (e) {
